@@ -3,11 +3,14 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <iostream>
 
 using namespace std;
 int main()
 {
-    int serverSocket, clientSocket;
+    int serverSocket, clientSocket, pid;
     // specifying the address
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
@@ -28,10 +31,17 @@ int main()
         // accepting connection request
         clientSocket = accept(serverSocket, nullptr, nullptr);
 
-        // recieving data
+        pid = fork();
         char buffer[1024] = { 0 };
-        recv(clientSocket, buffer, sizeof(buffer), 0);
-        cout << "Message from client: " << buffer << endl;
+
+        if(pid==0)
+        {
+            // recieving data
+            recv(clientSocket, buffer, sizeof(buffer), 0);
+            cout << "Message from client: " << buffer << endl;
+            close(clientSocket);
+            exit(0);
+        }
     }
 
     // closing the socket.
