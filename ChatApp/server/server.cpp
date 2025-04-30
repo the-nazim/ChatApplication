@@ -1,17 +1,4 @@
-#include <bits/stdc++.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <iostream>
-#include <thread>
-#include <mutex>
-
-using namespace std;
-
-mutex mtx;
+#include "server.h"
 
 class Server 
 {
@@ -64,35 +51,28 @@ void Server::start()
             continue;
         }
 
-        int pid = fork();
-        if(pid == 0)
-        {
-            char buffer[1024] = {0};
-            while(true)
-            {
-                memset(buffer, 0, sizeof(buffer));
-                int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-                if (bytesReceived <= 0) 
-                    // Client disconnected or error occurred
-                    break;
-                    
-                cout << "Message from client: " << buffer << endl;
-            }
-            close(clientSocket);
-            exit(0);   
-        }
+        thread clientThread(handl_client, clientSocket);
+        clientThread.detach();
     }
 }
 
-// Server::void broadCastMessage()
-// {
+void handl_client(int clientSocket)
+{
+    char buffer[1024] = {0};
+    while(true)
+    {
+        memset(buffer, 0, sizeof(buffer));
+        int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (bytesReceived <= 0) 
+            // Client disconnected or error occurred
+            break;
+            
+        cout << "Message from client: " << buffer << endl;
+    }
+    close(clientSocket);
+    exit(0);   
+}
 
-// }
-
-// Server::void recieveMessage()
-// {
-
-// }
 
 int main()
 {
