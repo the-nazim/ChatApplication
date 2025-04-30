@@ -6,46 +6,98 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <iostream>
+#include <thread>
+#include <mutex>
 
 using namespace std;
-int main()
+
+mutex mtx;
+
+class Server 
 {
-    int serverSocket, clientSocket, pid;
-    // specifying the address
-    sockaddr_in serverAddress;
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(8080);
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
-
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    private:
+        int serverSocket;
+        sockaddr_in serverAddress;
     
-    // binding socket.
-    bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-
-    
-    // listening to the assigned socket
-    listen(serverSocket, 5);
-    
-    while(1)
-    {
-        // accepting connection request
-        clientSocket = accept(serverSocket, nullptr, nullptr);
-
-        pid = fork();
-        char buffer[1024] = { 0 };
-
-        if(pid==0)
+    public:
+        Server(string ipAddress, int port)
         {
-            // recieving data
-            recv(clientSocket, buffer, sizeof(buffer), 0);
-            cout << "Message from client: " << buffer << endl;
+            serverSocket = socket(AF_INET, SOCK_STREAM,0);
+            
+            memset(&serverAddress, 0, sizeof(serverAddress));
+
+            serverAddress.sin_family = AF_INET;
+            serverAddress.sin_port = htons(port);
+            serverAddress.sin_addr.s_addr = ipAddress.empty() ? INADDR_ANY : inet_addr(ipAddress.c_str());
+
+
+            if(serverSocket == -1)
+            {
+                cout << "Error in creating socket" << endl;
+                exit(1);
+            }
+
+            bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+            listen(serverSocket, 5);
+
+            cout<<"Server started !!!"<<endl;
+        }
+
+        void start();
+        void broadCastMessage();
+        void recieveMessage();
+    
+    ~Server()
+    {
+        close(serverSocket);
+    }
+};
+
+void Server::start()
+{
+    while(true)
+    {
+        int clientSocket = accept(serverSocket, nullptr,nullptr);
+        if(clientSocket == -1)
+        {
+            cout << "Error in accepting connection" << endl;
+            continue;
+        }
+
+        int pid = fork();
+        if(pid == 0)
+        {
+            char buffer[1024] = {0};
+            while(true)
+            {
+                memset(buffer, 0, sizeof(buffer));
+                int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+                if (bytesReceived <= 0) 
+                    // Client disconnected or error occurred
+                    break;
+                    
+                cout << "Message from client: " << buffer << endl;
+            }
             close(clientSocket);
-            exit(0);
+            exit(0);   
         }
     }
+}
 
-    // closing the socket.
-    close(serverSocket);
+// Server::void broadCastMessage()
+// {
+
+// }
+
+// Server::void recieveMessage()
+// {
+
+// }
+
+int main()
+{
+    Server server("127.0.0.1", 8080);
+    server.start();
 
     return 0;
 }
