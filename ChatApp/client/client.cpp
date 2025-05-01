@@ -22,11 +22,12 @@ int main()
     // sending connection request
     connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
+    string message;
+    
     while(1)
     {
-        string message;
         cout<<"Enter the message: ";
-        cin>>message;
+        getline(cin,message);
         const char* to_send = message.c_str();
         send(clientSocket, to_send, strlen(to_send), 0);
     }
