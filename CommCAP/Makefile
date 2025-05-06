@@ -5,7 +5,7 @@ BIN		:= bin
 SRC		:= src
 INCLUDE_MONGO	:= /usr/local/include/mongocxx/v_noabi
 INCLUDE_BSON	:= /usr/local/include/bsoncxx/v_noabi
-LIB     := /usr/local/lib
+LIB     := lib
 
 LIBRARIES	:= -lmongocxx -lbsoncxx
 EXECUTABLE	:= main
