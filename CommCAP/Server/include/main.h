@@ -24,7 +24,7 @@ class Database
         mongocxx::database db;
         mongocxx::client conn;
         mongocxx::collection collection;
-        string db_uri = "mongodb://172.19.64.1:27017/";
+        
         string db_name = "testdb";
         string collection_name = "test_messages";
     public:

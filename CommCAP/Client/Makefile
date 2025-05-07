@@ -5,8 +5,10 @@ BIN		:= bin
 SRC		:= src
 INCLUDE	:= include
 LIB		:= lib
+INCLUDE_MONGO	:= /usr/local/include/mongocxx/v_noabi
+INCLUDE_BSON	:= /usr/local/include/bsoncxx/v_noabi
 
-LIBRARIES	:=
+LIBRARIES	:= -lmongocxx -lbsoncxx
 EXECUTABLE	:= main
 
 
@@ -17,7 +19,7 @@ run: clean all
 	./$(BIN)/$(EXECUTABLE)
 
 $(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
-	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
+	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -I$(INCLUDE_MONGO) -I$(INCLUDE_BSON) -L$(LIB) $^ -o $@ $(LIBRARIES)
 
 clean:
 	-rm $(BIN)/*
