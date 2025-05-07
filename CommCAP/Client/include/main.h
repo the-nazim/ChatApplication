@@ -40,5 +40,38 @@ class dbClient
 
 class Client
 {
-    
-}
+    private:
+        int clientSocket;
+        sockaddr_in serverAddress;
+
+    public:
+        Client(string ipAddress, int port)
+        {
+            clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+            memset(&serverAddress, 0, sizeof(serverAddress));
+
+            serverAddress.sin_family = AF_INET;
+            serverAddress.sin_port = htons(port);
+            inet_pton(AF_INET, ipAddress.c_str(), &serverAddress.sin_addr);
+
+            if (clientSocket == -1)
+            {
+                cout << "Error in creating socket" << endl;
+                exit(1);
+            }
+
+            if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
+            {
+                cout << "Error in connecting to server" << endl;
+                exit(1);
+            }
+        }
+
+        void sendMessage();
+
+        ~Client()
+        {
+            close(clientSocket);
+        }
+};
