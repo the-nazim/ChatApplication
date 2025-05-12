@@ -27,15 +27,15 @@ class dbClient
         string db_name = "testdb";
         string collection_name = "test_clients";
 
-        public:
-            dbClient(): inst(), conn{mongocxx::uri{"mongodb://172.19.64.1:27017/"}}, db_name("testdb"), collection_name("test_clients")
-            {
-                db = conn[db_name];
-                collection = db[collection_name];
-            }
+    public:
+        dbClient(): inst(), conn{mongocxx::uri{"mongodb://172.19.64.1:27017/"}}, db_name("testdb"), collection_name("test_clients")
+        {
+            db = conn[db_name];
+            collection = db[collection_name];
+        }
 
-            void registerClient();
-            void loginClient();
+        string registerClient();
+        string loginClient();
 };
 
 class Client

@@ -20,7 +20,7 @@ string dbClient::registerClient()
     return username;
 }
 
-void dbClient::loginClient()
+string dbClient::loginClient()
 {
     string username, password;
     cout<<"Enter username: ";
@@ -41,6 +41,8 @@ void dbClient::loginClient()
     {
         cout << "Login failed for user: " << username << endl;
     }
+
+    return username;
 }
 
 void Client::sendMessage()
@@ -58,11 +60,66 @@ void Client::sendMessage()
     }
 }
 
-int main() 
+string regClient()
+{
+    string username;
+    cout<<"Enter username: ";
+    cin>>username;
+
+    return username;
+}   
+
+string logClient()
+{
+    string username;
+    cout<<"Enter username: ";
+    cin>>username;
+
+    return username;
+}
+
+int main(int argc, char *argv[]) 
 {
     dbClient client;
-    
+    string username;
     // client.registerClient();
     // client.loginClient();
+
+    if(argc == 1)
+    {
+        int ch;
+        cout<<"Enter your choice: \n1. Register\n2. Login\n";
+        cin>>ch;
+        switch(ch)
+        {
+            case 1:
+                username = regClient();
+                break;
+            case 2:
+                username = logClient();
+                break;
+            default:
+                cout<<"Invalid choice"<<endl;
+                return 0;
+        }
+    }
+
+    else if(argc>1)
+    {
+        if(argv[1].c_str()=="--register" || argv[1].c_str()=="-r")
+        {
+            username = regClient();
+        }
+        else if(argv[1].c_str()=="--login" || argv[1].c_str()=="-l")
+        {
+            username = logClient();
+        }
+        else
+        {
+            cout<<"Invalid choice"<<endl;
+            return 0;
+        }
+    }
+    
     return 0;
 }

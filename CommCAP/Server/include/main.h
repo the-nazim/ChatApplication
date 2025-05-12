@@ -13,8 +13,11 @@
 #include <thread>
 #include <cstring>
 #include <cstdlib>
+#include <mutex>
 
 using namespace std;
+mutex mtx;
+vector<int> clients;
 void handle_client(int clientSocket);
 
 class Database 

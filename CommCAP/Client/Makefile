@@ -14,9 +14,9 @@ EXECUTABLE	:= main
 
 all: $(BIN)/$(EXECUTABLE)
 
-run: clean all
-	clear
-	./$(BIN)/$(EXECUTABLE)
+# run: clean all
+# 	clear
+# 	./$(BIN)/$(EXECUTABLE)
 
 $(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -I$(INCLUDE_MONGO) -I$(INCLUDE_BSON) -L$(LIB) $^ -o $@ $(LIBRARIES)

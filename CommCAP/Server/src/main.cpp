@@ -24,6 +24,11 @@ void Server::start()
             continue;
         }
 
+        {
+            lock_guard<mutex> lock(mtx);
+            clients.push_back(clientSocket);
+        }
+
         thread clientThread(handle_client, clientSocket);
         clientThread.detach();
     }
@@ -32,7 +37,7 @@ void Server::start()
 void handle_client(int clientSocket)
 {
     char buffer[1024] = {0};
-    Database db;
+    // Database db;
     while(true)
     {
         memset(buffer, 0, sizeof(buffer));
@@ -43,8 +48,19 @@ void handle_client(int clientSocket)
             
         cout << "Message from client: " << buffer << endl;
 
-        db.insertMessage(string(buffer));
+        // db.insertMessage(string(buffer));
+
+        //Broadcast message
+        lock_guard<mutex> lock(mtx);
+        for(int client : clients)
+        {
+            if(client != clientSocket) // Don't send the message back to the sender
+                send(client, buffer, bytesReceived, 0);
+        }
     }
+
+    lock_guard<mutex> lock(mtx);
+    clients.erase(remove(clients.begin(), clients.end(), clientSocket), clients.end());
     close(clientSocket);   
 }
 
